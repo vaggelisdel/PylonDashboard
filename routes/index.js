@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/userSchema');
 var sess;
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -29,16 +32,18 @@ router.post('/login', async (req, res) => {
   const user = await User.findOne({
     email: req.body.email
   });
-
+  var loginPassword = req.body.password;
   if (user){
-    if (user.password == req.body.password){
-      sess.auth = 1;
-      sess.username = user.username;
-      res.redirect("/dashboard");
-    }else{
-      sess.message = "Wrong Password!";
-      res.redirect("/");
-    }
+    bcrypt.compare(loginPassword, user.password, function(err, response) {
+      if (response == true){
+        sess.auth = 1;
+        sess.userdata = user;
+        res.redirect("/dashboard");
+      }else{
+        sess.message = "Wrong Password!";
+        res.redirect("/");
+      }
+    });
   }else{
     sess.message = "User not found";
     res.redirect("/");
@@ -48,18 +53,21 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   sess = req.session;
-  const Item = new User({
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password
+  var RegisterPassword = req.body.password;
+  bcrypt.hash(RegisterPassword, saltRounds, function(err, hash) {
+    const Item = new User({
+      username: req.body.username,
+      email: req.body.email,
+      password: hash
+    });
+    Item.save().then(
+        data=> {
+          sess.message = "User created successfully";
+          res.redirect("/");
+        }
+    ).catch(err=>{
+      throw err;
+    })
   });
-  Item.save().then(
-      data=> {
-        sess.message = "User created successfully";
-        res.redirect("/");
-      }
-  ).catch(err=>{
-    throw err;
-  })
 });
 module.exports = router;

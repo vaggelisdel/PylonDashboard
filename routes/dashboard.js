@@ -8,14 +8,7 @@ var request = require("request");
 router.get('/', function(req, res, next) {
   sess = req.session;
   if (sess.auth == 1){
-    var totalItems = 0;
-    request({url: "http://35.223.118.133/api/raw/heitems", json: true }, function (error, response, body) {
-      if (!error && response.statusCode === 200) {
-        totalItems = body.length;
-        console.log(totalItems);
-      }
-    });
-    res.render('dashboard.hbs', {layout: "Layouts/DashboardLayout.hbs", username: sess.username , message: sess.message, totalItems: totalItems});
+    res.render('dashboard.hbs', {layout: "Layouts/DashboardLayout.hbs", userdata: sess.userdata , dashboard: true});
   }else{
     res.redirect('/');
   }
@@ -45,23 +38,23 @@ router.get('/allitems', function(req, res, next) {
       if (!error && response.statusCode === 200) {
         // res.send(body); // Print the json response
       }
-      res.render("allitems.hbs", {layout: "Layouts/DashboardLayout.hbs", items: body, username: sess.username});
+      res.render("allitems.hbs", {layout: "Layouts/DashboardLayout.hbs", items: body, userdata: sess.userdata, allitems: true});
     })
   }else{
     res.redirect('/');
   }
 });
 
-router.get('/oneitem', function(req, res, next) {
+router.get('/searchitem', function(req, res, next) {
   sess = req.session;
   if (sess.auth == 1) {
-    res.render('oneitem.hbs', {layout: "Layouts/DashboardLayout.hbs", username: sess.username , message: sess.message});
+    res.render('searchitem.hbs', {layout: "Layouts/DashboardLayout.hbs", userdata: sess.userdata, searchitem: true});
   }else{
     res.redirect('/');
   }
 });
 
-router.post('/oneitem', function(req, res, next) {
+router.post('/searchitem', function(req, res, next) {
   sess = req.session;
   if (sess.auth == 1) {
     var BarCode = req.body.barcode;
@@ -76,7 +69,7 @@ router.post('/oneitem', function(req, res, next) {
         console.error(error);
         return
       }
-      res.render("oneitem.hbs", {layout: "Layouts/DashboardLayout.hbs", item: body, username: sess.username});
+      res.render("searchitem.hbs", {layout: "Layouts/DashboardLayout.hbs", item: body, userdata: sess.userdata, searchitem: true});
     })
   }else{
     res.redirect('/');
