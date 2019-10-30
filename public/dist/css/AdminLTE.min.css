@@ -5576,3 +5576,10 @@ hr {
     text-align: center;
     font-size: 15px;
 }
+.inside_item{
+    position: relative;
+    background: #dadada;
+    padding: 2em;
+    border-radius: 10px;
+    margin: 15px 0;
+}
