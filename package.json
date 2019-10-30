@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "bcrypt": "^3.0.6",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -15,6 +16,7 @@
     "http-errors": "~1.6.3",
     "mongoose": "^5.7.7",
     "morgan": "~1.9.1",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "sendgrid": "^5.2.3"
   }
 }
